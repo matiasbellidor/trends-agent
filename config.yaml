@@ -1,0 +1,171 @@
+# Configuración del digest. Todo lo que cambia el comportamiento vive acá.
+# Las keywords se buscan como palabra completa y sin distinguir mayúsculas.
+
+timezone_offset_hours: -3   # Buenos Aires (sin horario de verano)
+max_age_hours: 96           # descarta ítems más viejos que esto
+seen_keep_days: 21          # cuánto tiempo se recuerda lo ya mostrado
+
+scoring:
+  # score = 100 * (relevance*w_rel + engagement_percentil*w_eng + recencia*w_rec)
+  weights: { relevance: 0.5, engagement: 0.3, recency: 0.2 }
+  half_life_hours: 36       # a las 36 h un ítem pierde la mitad del puntaje de recencia
+  min_relevance: 0.12       # por debajo de esto el ítem se descarta
+  topical_floor: 0.3        # relevancia mínima para fuentes marcadas topical: true
+  multi_source_bonus: 5     # puntos extra por cada fuente adicional que lo trae
+  multi_source_bonus_cap: 10
+
+digest:
+  max_items: 30
+  per_pillar_cap: 10        # evita que un solo pilar ocupe todo el digest
+  summary_chars: 220
+
+pillars:
+  actuarial_data:
+    label: "Actuarial y Data"
+    weight: 1.0
+    keywords:
+      - actuarial
+      - actuary
+      - actuaries
+      - actuarial science
+      - mortality
+      - longevity
+      - loss reserving
+      - reserving
+      - insurance pricing
+      - insurtech
+      - risk model
+      - stochastic
+      - monte carlo
+      - survival analysis
+      - time series
+      - forecasting
+      - pandas
+      - polars
+      - duckdb
+      - sql
+      - dbt
+      - data analysis
+      - data analyst
+      - data science
+      - statistics
+      - bayesian
+      - regression
+      - data visualization
+      - dashboard
+      - power bi
+      - tableau
+      - análisis de datos
+      - ciencias actuariales
+      - estadística
+  ia_productividad:
+    label: "IA aplicada a productividad"
+    weight: 0.9
+    keywords:
+      - claude
+      - claude code
+      - anthropic
+      - llm
+      - ai agent
+      - ai agents
+      - mcp
+      - prompt engineering
+      - obsidian
+      - automation
+      - second brain
+      - note-taking
+      - knowledge management
+      - ai workflow
+      - whisper
+      - productividad
+      - inteligencia artificial
+  proyectos_tecnicos:
+    label: "Proyectos técnicos"
+    weight: 0.6
+    keywords:
+      - python
+      - github actions
+      - open source
+      - side project
+      - streamlit
+      - fastapi
+      - data pipeline
+      - portfolio
+      - jupyter
+      - notebook
+      - rstats
+      - tidyverse
+  estudio:
+    label: "Estudio y universidad"
+    weight: 0.5
+    keywords:
+      - spaced repetition
+      - active recall
+      - anki
+      - study technique
+      - study techniques
+      - exam
+      - university
+      - universidad
+      - estudiar
+  plata_estudiante:
+    label: "Plata de estudiante"
+    weight: 0.4
+    keywords:
+      - freelance
+      - freelancing
+      - side income
+      - first client
+      - upwork
+      - remote job
+      - junior data
+
+sources:
+  - type: hackernews
+    limit: 60
+    min_points: 25
+    window_hours: 48
+    queries: [claude, actuarial, "data science", obsidian, sql]
+
+  - type: reddit
+    period: day
+    limit: 15
+    subreddits: [datascience, actuary, ClaudeAI, ObsidianMD, productivity, statistics, learnpython]
+
+  - type: github
+    window_days: 7
+    per_topic: 10
+    topics:
+      - { name: llm, min_stars: 100 }
+      - { name: claude-code, min_stars: 20 }
+      - { name: mcp, min_stars: 50 }
+      - { name: data-science, min_stars: 50 }
+      - { name: obsidian, min_stars: 30 }
+      - { name: actuarial, min_stars: 1 }
+      - { name: insurance, min_stars: 5 }
+
+  - type: arxiv
+    categories: [stat.AP, q-fin.RM, stat.ME]
+    max_results: 25
+    pause: 3
+
+  - type: youtube        # se saltea solo si no hay YOUTUBE_API_KEY
+    window_days: 7
+    region: AR
+    language: es
+    per_query: 10
+    queries:
+      - ciencias actuariales
+      - análisis de datos python
+      - claude code
+      - productividad con inteligencia artificial
+      - obsidian
+
+  - type: rss
+    per_feed: 10
+    feeds:
+      # URLs sin verificar contra la red real: si alguna falla, el digest la lista
+      # en "Fuentes con problemas" y el resto sigue funcionando.
+      - { name: simonwillison, url: "https://simonwillison.net/atom/everything/", topical: true }
+      - { name: flowingdata, url: "https://flowingdata.com/feed", topical: true }
+      - { name: realpython, url: "https://realpython.com/atom.xml", topical: false }
